@@ -19,7 +19,13 @@
       --accent-light: #E8C547;
     }
 
-    * { box-sizing: border-box; }
+    * { 
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
 
     html, body {
       margin: 0;
@@ -29,6 +35,12 @@
       background: linear-gradient(180deg, #0A1912 0%, #050D0A 100%);
       color: var(--text);
       overflow-x: hidden;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
 
     body {
@@ -180,6 +192,9 @@
       justify-content: center;
       cursor: pointer;
       transition: transform 0.2s ease;
+      -webkit-touch-callout: none;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     .circle-inner:active {
@@ -242,6 +257,8 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     .reset-btn:hover {
@@ -277,6 +294,8 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     .toggle-btn:hover {
@@ -635,12 +654,17 @@
       });
     }
 
-    // Prevent zoom on iOS
+    // Prevent zoom on iOS and text selection
     document.addEventListener('touchmove', (e) => {
       if (e.touches.length > 1) {
         e.preventDefault();
       }
     }, { passive: false });
+
+    // Disable context menu on long press
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
   </script>
 </body>
 </html>
