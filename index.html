@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0A1912" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Tasbih Digital</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <style>
+    :root {
+      --bg: #0A1912;
+      --card: #11261d;
+      --text: #F4FFF8;
+      --muted: #B9D4C1;
+      --accent: #8DE6B1;
+      --accent-strong: #57d68b;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: radial-gradient(circle at top, #143326 0%, #0A1912 45%);
+      overscroll-behavior: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app {
+      width: min(100%, 440px);
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(20, 39, 31, 0.95), rgba(10, 25, 18, 0.96));
+      border: 1px solid rgba(141, 230, 177, 0.24);
+      border-radius: 28px;
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.28);
+      padding: 28px 22px;
+    }
+
+    .label {
+      margin: 0;
+      text-align: center;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .count {
+      text-align: center;
+      font-size: clamp(3.2rem, 15vw, 6.2rem);
+      line-height: 1;
+      margin: 20px 0 18px;
+      font-weight: 800;
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.96rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .progress {
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      height: 12px;
+      margin-bottom: 22px;
+    }
+
+    .progress-bar {
+      display: block;
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+      border-radius: inherit;
+      transition: width 0.18s ease;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+    }
+
+    button {
+      border: none;
+      border-radius: 16px;
+      padding: 16px 18px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.12s ease;
+    }
+
+    button:active { transform: scale(0.98); }
+
+    .primary {
+      background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+      color: #0B1A14;
+    }
+
+    .secondary {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+    }
+
+    @media (max-width: 420px) {
+      .card {
+        padding: 24px 16px;
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="card">
+      <p class="label">Tasbih Digital</p>
+      <h1 class="count" id="count">0</h1>
+      <div class="meta">
+        <span id="round">Ronda 1</span>
+        <span id="progressText">0%</span>
+      </div>
+      <div class="progress" aria-label="Progress">
+        <span class="progress-bar" id="progressBar"></span>
+      </div>
+      <div class="controls">
+        <button class="primary" id="addBtn" type="button">+1 Tasbih</button>
+        <button class="secondary" id="resetBtn" type="button">Reset</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const MAX_COUNT = 999;
+    const countEl = document.getElementById('count');
+    const roundEl = document.getElementById('round');
+    const progressTextEl = document.getElementById('progressText');
+    const progressBarEl = document.getElementById('progressBar');
+    const addBtn = document.getElementById('addBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    let count = 0;
+
+    function updateUi() {
+      countEl.textContent = count;
+      const currentRound = Math.floor(count / 100) + 1;
+      roundEl.textContent = count === 0 ? 'Ronda 1' : 'Ronda ' + currentRound;
+
+      const progress = (count / MAX_COUNT) * 100;
+      progressTextEl.textContent = Math.round(progress) + '%';
+      progressBarEl.style.width = progress + '%';
+    }
+
+    function playTone() {
+      const AudioCtor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtor) return;
+
+      try {
+        const audioCtx = new AudioCtor();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        const now = audioCtx.currentTime;
+
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(900, now);
+        oscillator.frequency.exponentialRampToValueAtTime(180, now + 0.1);
+
+        gainNode.gain.setValueAtTime(0.0001, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.18, now + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        oscillator.start(now);
+        oscillator.stop(now + 0.17);
+      } catch (error) {
+        console.warn('Audio not supported:', error);
+      }
+    }
+
+    function addCount() {
+      if (count >= MAX_COUNT) return;
+      count += 1;
+      updateUi();
+
+      if (navigator.vibrate) {
+        navigator.vibrate(24);
+      }
+
+      playTone();
+    }
+
+    function resetCount() {
+      count = 0;
+      updateUi();
+
+      if (navigator.vibrate) {
+        navigator.vibrate([20, 20, 40]);
+      }
+    }
+
+    addBtn.addEventListener('click', addCount);
+    resetBtn.addEventListener('click', resetCount);
+
+    updateUi();
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch((error) => {
+          console.error('Service worker registration failed:', error);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
