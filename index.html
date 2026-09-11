@@ -500,6 +500,20 @@
     let count = 0;
     let vibrationEnabled = true;
     let soundEnabled = true;
+    let audioContext = null;
+
+    // Initialize Audio Context on first user interaction
+    function initAudioContext() {
+      if (audioContext) return;
+      
+      const AudioCtor = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtor) {
+        audioContext = new AudioCtor();
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+      }
+    }
 
     // Load from localStorage
     function loadState() {
@@ -522,25 +536,30 @@
     }
 
     function updateUI() {
-      // Update counter
-      counterValue.textContent = (count % ROUND_SIZE);
-      const progress = ((count % ROUND_SIZE) / ROUND_SIZE) * 100;
-      counterInfo.textContent = `${count % ROUND_SIZE} / ${ROUND_SIZE}`;
+      // Update counter - show progress within current round (0-99)
+      const progressInRound = count % ROUND_SIZE;
+      counterValue.textContent = progressInRound;
+      counterInfo.textContent = `${progressInRound} / ${ROUND_SIZE}`;
       
-      // Update circle progress
+      // Update circle progress (0-100%)
+      const progress = (progressInRound / ROUND_SIZE) * 100;
       const angle = (progress / 100) * 360;
       circleProgress.style.setProperty('--progress-angle', `${angle}deg`);
 
       // Update stats
       totalCount.textContent = count;
-      const currentRound = Math.floor(count / ROUND_SIZE) + 1;
-      roundCount.textContent = Math.min(currentRound, MAX_ROUNDS);
+      
+      // Calculate round correctly: 0-99 = Round 0, 100-199 = Round 1, etc.
+      const currentRound = Math.floor(count / ROUND_SIZE);
+      roundCount.textContent = currentRound;
 
       // Update hint
-      if (count % ROUND_SIZE === 0 && count > 0) {
+      if (progressInRound === 0 && count > 0) {
         counterHint.textContent = 'Putaran ' + currentRound + ' selesai!';
+      } else if (count === 0) {
+        counterHint.textContent = 'Sentuh untuk mulai';
       } else {
-        counterHint.textContent = count === 0 ? 'Sentuh untuk mulai' : 'Lanjutkan dzikir';
+        counterHint.textContent = 'Lanjutkan dzikir';
       }
 
       saveState();
@@ -548,15 +567,14 @@
 
     function playTone() {
       if (!soundEnabled) return;
-
-      const AudioCtor = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtor) return;
+      
+      initAudioContext();
+      if (!audioContext) return;
 
       try {
-        const audioCtx = new AudioCtor();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        const now = audioCtx.currentTime;
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        const now = audioContext.currentTime;
 
         oscillator.type = 'sine';
         oscillator.frequency.setValueAtTime(800, now);
@@ -567,7 +585,7 @@
         gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
 
         oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
+        gainNode.connect(audioContext.destination);
 
         oscillator.start(now);
         oscillator.stop(now + 0.15);
@@ -636,6 +654,10 @@
     resetBtn.addEventListener('click', resetCount);
     vibrationBtn.addEventListener('click', toggleVibration);
     soundBtn.addEventListener('click', toggleSound);
+
+    // Initialize audio context on first interaction
+    document.addEventListener('click', initAudioContext, { once: true });
+    document.addEventListener('touchstart', initAudioContext, { once: true });
 
     // Initialize
     loadState();
