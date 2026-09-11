@@ -13,399 +13,523 @@
   <style>
     :root {
       --bg: #0A1912;
-      --card: #11261d;
       --text: #F4FFF8;
-      --muted: #B9D4C1;
-      --accent: #8DE6B1;
-      --accent-strong: #57d68b;
-      --accent-light: #A8F0C7;
+      --muted: #7A9484;
+      --accent: #D4AF37;
+      --accent-light: #E8C547;
     }
 
     * { box-sizing: border-box; }
 
     html, body {
       margin: 0;
-      min-height: 100%;
-      font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
-      background: var(--bg);
+      padding: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(180deg, #0A1912 0%, #050D0A 100%);
       color: var(--text);
+      overflow-x: hidden;
     }
 
     body {
+      display: flex;
+      flex-direction: column;
       min-height: 100vh;
+    }
+
+    .container {
+      flex: 1;
       display: flex;
-      align-items: center;
-      justify-content: center;
+      flex-direction: column;
       padding: 20px;
-      background: radial-gradient(circle at top, #143326 0%, #0A1912 45%);
-      overscroll-behavior: none;
-      -webkit-tap-highlight-color: transparent;
-      overflow: hidden;
+      max-width: 100%;
     }
 
-    .app {
-      width: min(100%, 440px);
-      position: relative;
-    }
-
-    /* Floating particles background */
-    .particles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .particle {
-      position: absolute;
-      background: var(--accent);
-      border-radius: 50%;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .card {
-      background: linear-gradient(180deg, rgba(20, 39, 31, 0.95), rgba(10, 25, 18, 0.96));
-      border: 1px solid rgba(141, 230, 177, 0.24);
-      border-radius: 28px;
-      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.28);
-      padding: 28px 22px;
-      position: relative;
-      z-index: 1;
-      backdrop-filter: blur(10px);
-    }
-
-    .label {
-      margin: 0;
-      text-align: center;
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    .counter-container {
-      position: relative;
-      height: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 20px 0;
-    }
-
-    .count {
-      text-align: center;
-      font-size: clamp(3.2rem, 15vw, 6.2rem);
-      line-height: 1;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--accent-light), var(--accent-strong));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      transition: transform 0.2s ease;
-    }
-
-    .count.pulse {
-      animation: pulse 0.4s ease-out;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.15); }
-      100% { transform: scale(1); }
-    }
-
-    .glow-ring {
-      position: absolute;
-      width: 150px;
-      height: 150px;
-      border: 2px solid var(--accent);
-      border-radius: 50%;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .glow-ring.active {
-      animation: glow 0.8s ease-out;
-    }
-
-    @keyframes glow {
-      0% {
-        opacity: 0.6;
-        transform: translate(-50%, -50%) scale(0.8);
-      }
-      100% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(1.4);
-      }
-    }
-
-    .meta {
+    /* Header */
+    .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.96rem;
+      margin-bottom: 24px;
+      padding: 0 8px;
+      border-left: 4px solid var(--accent);
+      padding-left: 16px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 2px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .browser-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
       color: var(--muted);
-      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .browser-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+
+    /* Stats Row */
+    .stats-row {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 32px;
       padding: 0 8px;
     }
 
-    .meta span {
-      font-weight: 500;
+    .stat-box {
+      text-align: center;
     }
 
-    .progress {
-      background: rgba(255,255,255,0.08);
-      border-radius: 999px;
-      overflow: hidden;
-      height: 12px;
-      margin-bottom: 22px;
-      border: 1px solid rgba(141, 230, 177, 0.16);
+    .stat-label {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
     }
 
-    .progress-bar {
-      display: block;
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), var(--accent-strong));
-      border-radius: inherit;
-      transition: width 0.18s ease;
-      box-shadow: 0 0 12px rgba(141, 230, 177, 0.4);
-    }
-
-    .controls {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-    }
-
-    button {
-      border: none;
-      border-radius: 16px;
-      padding: 16px 18px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.12s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    button:active { 
-      transform: scale(0.96);
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-    }
-
-    .primary {
-      background: linear-gradient(180deg, var(--accent), var(--accent-strong));
-      color: #0B1A14;
-      box-shadow: 0 8px 20px rgba(141, 230, 177, 0.3);
-    }
-
-    .primary:hover {
-      box-shadow: 0 12px 28px rgba(141, 230, 177, 0.4);
-    }
-
-    .secondary {
-      background: rgba(141, 230, 177, 0.12);
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
       color: var(--text);
-      border: 1px solid rgba(141, 230, 177, 0.24);
     }
 
-    .secondary:hover {
-      background: rgba(141, 230, 177, 0.18);
-      border-color: rgba(141, 230, 177, 0.4);
+    .stat-value.accent {
+      color: var(--accent);
     }
 
-    .ripple {
+    .stat-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+      margin-bottom: 32px;
+    }
+
+    /* Main Counter Circle */
+    .counter-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+
+    .circle-container {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .circle-bg {
       position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 3px solid rgba(212, 175, 55, 0.3);
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.5);
-      transform: scale(0);
-      animation: ripple-animation 0.6s ease-out;
-      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(20, 39, 31, 0.4), transparent);
     }
 
-    @keyframes ripple-animation {
-      to {
-        transform: scale(4);
-        opacity: 0;
-      }
+    .circle-progress {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(
+        var(--accent) 0deg,
+        var(--accent) var(--progress-angle),
+        rgba(212, 175, 55, 0.1) var(--progress-angle),
+        rgba(212, 175, 55, 0.1) 360deg
+      );
+      --progress-angle: 0deg;
     }
 
-    .milestone-badge {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-      color: #0B1A14;
-      padding: 20px 40px;
+    .circle-inner {
+      position: relative;
+      z-index: 2;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(10, 25, 18, 0.8), rgba(14, 32, 24, 0.8));
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .circle-inner:active {
+      transform: scale(0.98);
+    }
+
+    .dzikir-label {
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .counter-value {
+      font-size: 72px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+      margin: 0;
+    }
+
+    .counter-info {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .counter-hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Control Buttons */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .reset-btn {
+      width: 100%;
+      padding: 16px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 24px;
+      background: transparent;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .reset-btn:hover {
+      background: rgba(212, 175, 55, 0.1);
+      border-color: rgba(212, 175, 55, 0.5);
+    }
+
+    .reset-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Toggle Buttons */
+    .toggle-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .toggle-btn {
+      padding: 14px 12px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
       border-radius: 20px;
-      font-weight: 700;
-      font-size: 1.2rem;
-      z-index: 100;
-      pointer-events: none;
-      animation: float-up 2s ease-out forwards;
-      box-shadow: 0 10px 40px rgba(141, 230, 177, 0.4);
+      background: rgba(212, 175, 55, 0.08);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
     }
 
-    @keyframes float-up {
-      0% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(0.8);
-      }
-      50% {
-        opacity: 1;
-      }
-      100% {
-        opacity: 0;
-        transform: translate(-50%, -150px) scale(1);
-      }
+    .toggle-btn:hover {
+      background: rgba(212, 175, 55, 0.15);
+      border-color: rgba(212, 175, 55, 0.5);
     }
 
-    @media (max-width: 420px) {
-      .card {
-        padding: 24px 16px;
+    .toggle-icon {
+      font-size: 18px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #0A1912;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toggle-switch {
+      width: 36px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-switch.active {
+      background: var(--accent);
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: left 0.3s ease;
+    }
+
+    .toggle-switch.active::after {
+      left: 18px;
+    }
+
+    /* Footer Info */
+    .footer-info {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+      padding: 16px;
+      border-top: 1px solid rgba(212, 175, 55, 0.1);
+      margin-top: auto;
+    }
+
+    .footer-info p {
+      margin: 4px 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .container {
+        padding: 16px;
       }
 
-      .controls {
-        grid-template-columns: 1fr;
+      .circle-container {
+        width: 240px;
+        height: 240px;
       }
 
-      .counter-container {
-        height: 140px;
+      .circle-inner {
+        width: 200px;
+        height: 200px;
+      }
+
+      .counter-value {
+        font-size: 56px;
+      }
+
+      .header {
+        margin-bottom: 20px;
+      }
+
+      .header h1 {
+        font-size: 16px;
+      }
+
+      .stats-row {
+        margin-bottom: 24px;
+      }
+
+      .stat-value {
+        font-size: 28px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="particles" id="particles"></div>
-  
-  <main class="app">
-    <section class="card">
-      <p class="label">✨ Tasbih Digital</p>
-      
-      <div class="counter-container">
-        <div class="glow-ring" id="glowRing"></div>
-        <h1 class="count" id="count">0</h1>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Tasbih Digital</h1>
+      <div class="browser-indicator">
+        <span class="browser-dot"></span>
+        <span>Browser</span>
       </div>
+    </div>
 
-      <div class="meta">
-        <span id="round">Ronda 1</span>
-        <span id="progressText">0%</span>
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-label">Total</div>
+        <div class="stat-value"><span id="totalCount">0</span><span class="stat-subtitle">/999</span></div>
       </div>
-      <div class="progress" aria-label="Progress">
-        <span class="progress-bar" id="progressBar"></span>
+      <div class="stat-box">
+        <div class="stat-label">Putaran</div>
+        <div class="stat-value accent"><span id="roundCount">0</span><span class="stat-subtitle">/10</span></div>
       </div>
-      <div class="controls">
-        <button class="primary" id="addBtn" type="button">✨ +1 Tasbih</button>
-        <button class="secondary" id="resetBtn" type="button">🔄 Reset</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Main Counter -->
+    <div class="counter-section">
+      <div class="circle-container" id="circleContainer">
+        <div class="circle-progress" id="circleProgress"></div>
+        <div class="circle-bg"></div>
+        <div class="circle-inner" id="circleInner">
+          <div class="dzikir-label">Dzikir</div>
+          <div class="counter-value" id="counterValue">0</div>
+          <div class="counter-info"><span id="counterInfo">0 / 100</span></div>
+          <div class="counter-hint" id="counterHint">Sentuh untuk mulai</div>
+        </div>
       </div>
-    </section>
-  </main>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="reset-btn" id="resetBtn">
+        <span>↻</span>
+        <span>Reset Ke Nol</span>
+      </button>
+    </div>
+
+    <!-- Toggles -->
+    <div class="toggle-group">
+      <button class="toggle-btn" id="vibrationBtn">
+        <div>
+          <div class="toggle-icon">⚡</div>
+          <div>
+            <div style="margin-bottom: 2px;">Getar</div>
+            <div style="font-size: 10px; color: var(--muted);">PADA</div>
+          </div>
+        </div>
+        <div class="toggle-switch active" id="vibrationSwitch"></div>
+      </button>
+
+      <button class="toggle-btn" id="soundBtn">
+        <div>
+          <div class="toggle-icon">🔊</div>
+          <div>
+            <div style="margin-bottom: 2px;">Suara</div>
+            <div style="font-size: 10px; color: var(--muted);">PADA</div>
+          </div>
+        </div>
+        <div class="toggle-switch active" id="soundSwitch"></div>
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-info">
+      <p>Sistem putaran 100 · Total target 999 · Jalan offline setelah di-install</p>
+      <p>Tap lingkaran untuk berdzikir, getar & klik dapat diatur</p>
+    </div>
+  </div>
 
   <script>
     const MAX_COUNT = 999;
-    const countEl = document.getElementById('count');
-    const roundEl = document.getElementById('round');
-    const progressTextEl = document.getElementById('progressText');
-    const progressBarEl = document.getElementById('progressBar');
-    const addBtn = document.getElementById('addBtn');
+    const ROUND_SIZE = 100;
+    const MAX_ROUNDS = 10;
+
+    // DOM Elements
+    const circleInner = document.getElementById('circleInner');
+    const circleProgress = document.getElementById('circleProgress');
+    const counterValue = document.getElementById('counterValue');
+    const counterInfo = document.getElementById('counterInfo');
+    const counterHint = document.getElementById('counterHint');
+    const totalCount = document.getElementById('totalCount');
+    const roundCount = document.getElementById('roundCount');
     const resetBtn = document.getElementById('resetBtn');
-    const glowRing = document.getElementById('glowRing');
-    const particlesContainer = document.getElementById('particles');
+    const vibrationBtn = document.getElementById('vibrationBtn');
+    const soundBtn = document.getElementById('soundBtn');
+    const vibrationSwitch = document.getElementById('vibrationSwitch');
+    const soundSwitch = document.getElementById('soundSwitch');
 
+    // State
     let count = 0;
+    let vibrationEnabled = true;
+    let soundEnabled = true;
 
-    const milestones = [100, 200, 300, 400, 500, 600, 700, 800, 900, 999];
-
-    function updateUi() {
-      countEl.textContent = count;
-      countEl.classList.remove('pulse');
-      void countEl.offsetWidth; // Trigger reflow
-      countEl.classList.add('pulse');
-
-      const currentRound = Math.floor(count / 100) + 1;
-      roundEl.textContent = count === 0 ? 'Ronda 1' : 'Ronda ' + currentRound;
-
-      const progress = (count / MAX_COUNT) * 100;
-      progressTextEl.textContent = Math.round(progress) + '%';
-      progressBarEl.style.width = progress + '%';
-
-      // Check milestones
-      if (milestones.includes(count)) {
-        showMilestone();
+    // Load from localStorage
+    function loadState() {
+      const saved = localStorage.getItem('tasbih-state');
+      if (saved) {
+        const state = JSON.parse(saved);
+        count = state.count || 0;
+        vibrationEnabled = state.vibration !== false;
+        soundEnabled = state.sound !== false;
       }
     }
 
-    function createGlowEffect() {
-      glowRing.classList.remove('active');
-      void glowRing.offsetWidth; // Trigger reflow
-      glowRing.classList.add('active');
+    // Save to localStorage
+    function saveState() {
+      localStorage.setItem('tasbih-state', JSON.stringify({
+        count,
+        vibration: vibrationEnabled,
+        sound: soundEnabled
+      }));
     }
 
-    function createParticle() {
-      const particle = document.createElement('div');
-      particle.className = 'particle';
+    function updateUI() {
+      // Update counter
+      counterValue.textContent = (count % ROUND_SIZE);
+      const progress = ((count % ROUND_SIZE) / ROUND_SIZE) * 100;
+      counterInfo.textContent = `${count % ROUND_SIZE} / ${ROUND_SIZE}`;
       
-      const size = Math.random() * 8 + 4;
-      particle.style.width = size + 'px';
-      particle.style.height = size + 'px';
-      
-      const startX = Math.random() * window.innerWidth;
-      const startY = window.innerHeight / 2;
-      particle.style.left = startX + 'px';
-      particle.style.top = startY + 'px';
-      
-      particlesContainer.appendChild(particle);
-      
-      const duration = Math.random() * 1000 + 800;
-      const endY = Math.random() * 200 - 100;
-      const endX = (Math.random() - 0.5) * 200;
-      
-      particle.animate([
-        { 
-          opacity: 1, 
-          transform: 'translate(0, 0) scale(1)' 
-        },
-        { 
-          opacity: 0, 
-          transform: `translate(${endX}px, ${endY}px) scale(0)` 
-        }
-      ], {
-        duration: duration,
-        easing: 'ease-out'
-      });
+      // Update circle progress
+      const angle = (progress / 100) * 360;
+      circleProgress.style.setProperty('--progress-angle', `${angle}deg`);
 
-      setTimeout(() => particle.remove(), duration);
-    }
+      // Update stats
+      totalCount.textContent = count;
+      const currentRound = Math.floor(count / ROUND_SIZE) + 1;
+      roundCount.textContent = Math.min(currentRound, MAX_ROUNDS);
 
-    function showMilestone() {
-      const badge = document.createElement('div');
-      badge.className = 'milestone-badge';
-      badge.textContent = '🎉 Milestone: ' + count;
-      document.body.appendChild(badge);
-      
-      setTimeout(() => badge.remove(), 2000);
-
-      // Create multiple particles
-      for (let i = 0; i < 12; i++) {
-        setTimeout(() => createParticle(), i * 50);
+      // Update hint
+      if (count % ROUND_SIZE === 0 && count > 0) {
+        counterHint.textContent = 'Putaran ' + currentRound + ' selesai!';
+      } else {
+        counterHint.textContent = count === 0 ? 'Sentuh untuk mulai' : 'Lanjutkan dzikir';
       }
+
+      saveState();
     }
 
     function playTone() {
+      if (!soundEnabled) return;
+
       const AudioCtor = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtor) return;
 
@@ -416,18 +540,18 @@
         const now = audioCtx.currentTime;
 
         oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(900, now);
-        oscillator.frequency.exponentialRampToValueAtTime(180, now + 0.1);
+        oscillator.frequency.setValueAtTime(800, now);
+        oscillator.frequency.exponentialRampToValueAtTime(200, now + 0.08);
 
         gainNode.gain.setValueAtTime(0.0001, now);
-        gainNode.gain.exponentialRampToValueAtTime(0.18, now + 0.01);
-        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+        gainNode.gain.exponentialRampToValueAtTime(0.15, now + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
 
         oscillator.connect(gainNode);
         gainNode.connect(audioCtx.destination);
 
         oscillator.start(now);
-        oscillator.stop(now + 0.17);
+        oscillator.stop(now + 0.15);
       } catch (error) {
         console.warn('Audio not supported:', error);
       }
@@ -435,55 +559,74 @@
 
     function addCount() {
       if (count >= MAX_COUNT) return;
+      
       count += 1;
-      updateUi();
-      createGlowEffect();
-      createParticle();
+      updateUI();
 
-      if (navigator.vibrate) {
-        navigator.vibrate(24);
+      if (vibrationEnabled && navigator.vibrate) {
+        navigator.vibrate(20);
       }
 
       playTone();
+
+      // Animate
+      counterValue.style.transform = 'scale(1.2)';
+      setTimeout(() => {
+        counterValue.style.transform = 'scale(1)';
+      }, 150);
     }
 
     function resetCount() {
-      count = 0;
-      updateUi();
+      if (confirm('Reset penghitung? Angka akan kembali ke 0.')) {
+        count = 0;
+        updateUI();
 
-      if (navigator.vibrate) {
-        navigator.vibrate([20, 20, 40]);
+        if (vibrationEnabled && navigator.vibrate) {
+          navigator.vibrate([20, 30, 20]);
+        }
       }
     }
 
-    // Add ripple effect to buttons
-    function createRipple(event) {
-      const button = event.currentTarget;
-      const ripple = document.createElement('span');
-      ripple.className = 'ripple';
+    function toggleVibration() {
+      vibrationEnabled = !vibrationEnabled;
+      vibrationSwitch.classList.toggle('active');
+      saveState();
       
-      const rect = button.getBoundingClientRect();
-      const size = Math.max(rect.width, rect.height);
-      const x = event.clientX - rect.left - size / 2;
-      const y = event.clientY - rect.top - size / 2;
-      
-      ripple.style.width = size + 'px';
-      ripple.style.height = size + 'px';
-      ripple.style.left = x + 'px';
-      ripple.style.top = y + 'px';
-      
-      button.appendChild(ripple);
-      
-      setTimeout(() => ripple.remove(), 600);
+      if (vibrationEnabled) {
+        navigator.vibrate && navigator.vibrate(30);
+      }
     }
 
-    addBtn.addEventListener('click', addCount);
-    addBtn.addEventListener('click', createRipple);
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      soundSwitch.classList.toggle('active');
+      saveState();
+
+      if (soundEnabled) {
+        playTone();
+      }
+    }
+
+    // Event listeners
+    circleInner.addEventListener('click', addCount);
+    circleInner.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      addCount();
+    });
+
     resetBtn.addEventListener('click', resetCount);
-    resetBtn.addEventListener('click', createRipple);
+    vibrationBtn.addEventListener('click', toggleVibration);
+    soundBtn.addEventListener('click', toggleSound);
 
-    updateUi();
+    // Initialize
+    loadState();
+    updateUI();
 
+    // Update vibration/sound button states
+    if (!vibrationEnabled) vibrationSwitch.classList.remove('active');
+    if (!soundEnabled) soundSwitch.classList.remove('active');
+
+    // Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').catch((error) => {
@@ -491,6 +634,13 @@
         });
       });
     }
+
+    // Prevent zoom on iOS
+    document.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
+    }, { passive: false });
   </script>
 </body>
 </html>
